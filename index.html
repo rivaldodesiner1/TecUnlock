@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TecUnlock • Painel de Licenças</title>
+<style>
+  :root{
+    --bg:#060b18; --bg2:#081024; --side:#0a1430; --card:#0c1733; --card2:#0f1d3d;
+    --border:#1b2c55; --glow:#2a60ff; --txt:#e8edff; --muted:#8a96bf;
+    --accent:#f5c400; --green:#2fd27a; --amber:#ffb020; --red:#ff5a60; --blue:#3b82f6; --purple:#9b6bff; --cyan:#35d6e6;
+  }
+  *{box-sizing:border-box;font-family:"Segoe UI",system-ui,Arial,sans-serif}
+  html,body{margin:0;height:100%}
+  body{background:
+      radial-gradient(1200px 500px at 12% -5%, rgba(42,96,255,.18), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(155,107,255,.12), transparent 55%),
+      var(--bg);
+      color:var(--txt);min-height:100vh}
+  a{color:var(--accent);text-decoration:none}
+  button{cursor:pointer;border:0;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;color:#fff}
+  input,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:#0a1636;color:var(--txt);font-size:14px}
+  input:focus,select:focus{outline:0;border-color:var(--glow);box-shadow:0 0 0 3px rgba(42,96,255,.2)}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 5px}
+  .muted{color:var(--muted);font-size:12px}
+  .btn-accent{background:linear-gradient(180deg,#ffd23b,#f5c400);color:#1a1400}
+  .btn-green{background:linear-gradient(180deg,#39e085,#22b86a);color:#042a18}
+  .btn-blue{background:linear-gradient(180deg,#4a90ff,#2f6fe0)}
+  .btn-red{background:linear-gradient(180deg,#ff6b70,#e8454c)}
+  .btn-purple{background:linear-gradient(180deg,#a97bff,#7f52e6)}
+  .btn-ghost{background:#13224a;color:var(--txt);border:1px solid var(--border)}
+  .btn-sm{padding:7px 11px;font-size:12px;border-radius:9px}
+
+  /* layout */
+  .shell{display:flex;min-height:100vh}
+  .side{width:236px;flex:none;background:linear-gradient(180deg,#0b1636,#070e22);border-right:1px solid var(--border);
+        display:flex;flex-direction:column;padding:20px 16px;position:sticky;top:0;height:100vh}
+  .brand{display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px 0 16px}
+  .brand .logo{width:58px;height:58px;border-radius:16px;background:linear-gradient(180deg,#ffd23b,#f5c400);color:#1a1400;
+        display:flex;align-items:center;justify-content:center;font-weight:900;font-size:30px;box-shadow:0 8px 24px rgba(245,196,0,.35)}
+  .brand h2{margin:4px 0 0;font-size:19px}
+  .brand span{font-size:11px;color:var(--muted)}
+  .nav{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+  .nav a{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:11px;color:#aeb8dd;font-weight:600;font-size:14px}
+  .nav a svg{width:19px;height:19px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9}
+  .nav a:hover{background:#111f44;color:#fff}
+  .nav a.active{background:linear-gradient(180deg,#2f6fe0,#2457c7);color:#fff;box-shadow:0 6px 18px rgba(42,96,255,.35)}
+  .side .spacer{flex:1}
+  .seccard{background:linear-gradient(180deg,#0d2742,#0a1b33);border:1px solid #16406a;border-radius:16px;padding:16px;text-align:center;box-shadow:0 0 24px rgba(42,160,120,.08)}
+  .seccard .shield{width:46px;height:46px;border-radius:50%;margin:0 auto 8px;background:radial-gradient(circle,#1a5e3d,#0c2e22);display:flex;align-items:center;justify-content:center}
+  .seccard b{display:block;font-size:14px}
+  .side .ver{display:flex;align-items:center;gap:8px;justify-content:center;font-size:12px;color:var(--muted);margin-top:14px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;gap:14px;padding:22px 26px 6px}
+  .topbar .bar{width:5px;height:30px;border-radius:3px;background:linear-gradient(180deg,#4a90ff,#2457c7)}
+  .topbar h1{margin:0;font-size:24px;letter-spacing:.2px}
+  .topbar .sp{flex:1}
+  .pillbadge{display:flex;align-items:center;gap:7px;background:#0c2a1c;border:1px solid #1c6b45;color:#51e39a;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700}
+  .userchip{display:flex;align-items:center;gap:9px;background:#0f1d3d;border:1px solid var(--border);border-radius:999px;padding:6px 12px 6px 7px;font-size:13px;font-weight:700}
+  .userchip .av{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,#2f6fe0,#1b3b8f);display:flex;align-items:center;justify-content:center}
+  .content{padding:14px 26px 24px}
+
+  .card{background:linear-gradient(180deg,var(--card),#0a1430);border:1px solid var(--border);border-radius:18px;padding:20px;
+        box-shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 10px 30px rgba(0,0,0,.35);position:relative}
+  .card h3{margin:0 0 3px;font-size:17px;display:flex;align-items:center;gap:10px}
+  .ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+  .ic svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.9}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+  .stat{background:linear-gradient(180deg,var(--card2),#0a1430);border:1px solid var(--border);border-radius:18px;padding:18px 18px 0;overflow:hidden;position:relative}
+  .stat .top{display:flex;align-items:center;gap:14px;padding-bottom:16px}
+  .stat .n{font-size:34px;font-weight:900;line-height:1}
+  .stat .l{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .stat .foot{height:7px;margin:0 -18px;background:#0a1226}
+  .stat .foot i{display:block;height:100%;width:68%;border-radius:0 6px 6px 0}
+  .stat.b .ic{background:rgba(59,130,246,.16)} .stat.b .ic svg{stroke:#6ea8ff} .stat.b .foot i{background:linear-gradient(90deg,#3b82f6,#7fb3ff);box-shadow:0 0 14px 1px #3b82f6}
+  .stat.g .ic{background:rgba(47,210,122,.16)} .stat.g .ic svg{stroke:#51e39a} .stat.g .foot i{background:linear-gradient(90deg,#22b86a,#59f0a0);box-shadow:0 0 14px 1px #2fd27a}
+  .stat.a .ic{background:rgba(255,176,32,.16)} .stat.a .ic svg{stroke:#ffcf6b} .stat.a .foot i{background:linear-gradient(90deg,#ffb020,#ffd874);box-shadow:0 0 14px 1px #ffb020}
+  .stat.p .ic{background:rgba(155,107,255,.16)} .stat.p .ic svg{stroke:#c3a6ff} .stat.p .foot i{background:linear-gradient(90deg,#9b6bff,#c7acff);box-shadow:0 0 14px 1px #9b6bff}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:120px}
+  .suprow{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  .suprow input{flex:1;min-width:180px}
+
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{background:#13224a;color:#aeb8dd;border:1px solid var(--border);border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:800;cursor:pointer}
+  .chip.active[data-filtro=todos]{background:linear-gradient(180deg,#4a90ff,#2f6fe0);color:#fff;border-color:transparent}
+  .chip.active[data-filtro=ativos]{background:linear-gradient(180deg,#39e085,#22b86a);color:#042a18;border-color:transparent}
+  .chip.active[data-filtro=vencidos]{background:linear-gradient(180deg,#ff6b70,#e8454c);color:#fff;border-color:transparent}
+  .chip.active[data-filtro=online]{background:linear-gradient(180deg,#a97bff,#7f52e6);color:#fff;border-color:transparent}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #15244b;vertical-align:middle}
+  th{color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .cli{display:flex;align-items:center;gap:11px}
+  .cli .thumb{width:40px;height:40px;border-radius:10px;flex:none;background:#0a1636;border:1px solid var(--border);object-fit:contain}
+  .cli .thumb.ph{display:flex;align-items:center;justify-content:center;color:#5a67a0;font-weight:800;font-size:15px}
+  .sub{color:var(--muted);font-size:12px;display:flex;flex-direction:column;gap:1px;margin-top:2px}
+  .pill{display:inline-block;padding:4px 11px;border-radius:999px;font-size:11px;font-weight:800}
+  .pill.ok{background:rgba(47,210,122,.15);color:#51e39a} .pill.no{background:rgba(255,90,96,.15);color:#ff8084}
+  .pill.on{background:rgba(155,107,255,.18);color:#c3a6ff} .pill.warn{background:rgba(255,176,32,.16);color:#ffcf6b}
+  .acts{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+  .vcard{background:linear-gradient(180deg,#131c0a,#0d1206);border:1px solid #4a4410;box-shadow:0 0 26px rgba(245,196,0,.12)}
+  .vcard h3 .ic{background:rgba(245,196,0,.16)} .vcard h3 .ic svg{stroke:#ffd23b}
+
+  .msg{padding:10px 12px;border-radius:10px;font-size:13px;margin-top:10px;display:none}
+  .msg.err{background:rgba(255,90,96,.12);color:#ff8a8e;display:block}
+  .msg.ok{background:rgba(47,210,122,.12);color:#72e6a6;display:block}
+
+  .foot{margin-top:auto;display:flex;align-items:center;gap:10px;padding:16px 26px;border-top:1px solid var(--border);color:var(--muted);font-size:13px;flex-wrap:wrap}
+  .foot .sp{flex:1}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(2,6,16,.7);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:40}
+  .modal-bg.open{display:flex}
+  .modal{background:linear-gradient(180deg,#0e1a3a,#0a1430);border:1px solid var(--border);border-radius:18px;padding:22px;max-width:470px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .logo-box{display:flex;gap:12px;align-items:center;background:#0a1636;border:1px solid var(--border);border-radius:11px;padding:10px}
+  .logo-box img{width:56px;height:56px;object-fit:contain;border-radius:9px;background:#fff1;flex:none}
+  .logo-btn{display:inline-block;margin:0;cursor:pointer;color:#fff;font-weight:700;border-radius:9px}
+
+  .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+  .login-card{width:100%;max-width:400px}
+
+  /* ---- responsivo: menu lateral vira barra superior ---- */
+  .tab{animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .menutoggle{display:none}
+  @media(max-width:900px){
+    .shell{flex-direction:column}
+    .side{position:static;width:auto;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 14px}
+    .brand{flex-direction:row;gap:10px;padding:0;flex:1}
+    .brand .logo{width:40px;height:40px;font-size:22px;border-radius:12px}
+    .brand h2{font-size:16px} .brand span{display:none}
+    .nav{flex-direction:row;overflow-x:auto;gap:6px;width:100%;order:3;margin:0;-webkit-overflow-scrolling:touch}
+    .nav a{padding:9px 12px;white-space:nowrap}
+    .nav a span{display:inline}
+    .side .spacer,.seccard,.side .ver{display:none}
+    .topbar{padding:16px 16px 4px} .topbar h1{font-size:19px}
+    .content{padding:12px 16px 20px}
+    .stats{grid-template-columns:repeat(2,1fr);gap:12px}
+    .grid2{grid-template-columns:1fr}
+    .userchip span{display:none}
+  }
+  @media(max-width:560px){ .stats{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="telaLogin" class="login-wrap">
+  <div class="card login-card">
+    <div class="brand" style="padding-top:0"><div class="logo">T</div><h2>TecUnlock</h2><span>Painel de Licenças</span></div>
+    <p class="muted" style="text-align:center;margin:2px 0 14px">Entre com o e-mail/senha de admin cadastrado no Supabase.</p>
+    <label>E-mail</label><input id="admEmail" type="email" autocomplete="username">
+    <label>Senha</label><input id="admSenha" type="password" autocomplete="current-password">
+    <div style="height:14px"></div>
+    <button id="btnEntrar" class="btn-accent" style="width:100%;padding:12px">Entrar</button>
+    <div id="msgLogin" class="msg"></div>
+  </div>
+</div>
+
+<!-- PAINEL -->
+<div id="telaPainel" class="shell" style="display:none">
+  <aside class="side">
+    <div class="brand">
+      <div class="logo">T</div>
+      <h2>TecUnlock</h2><span>Desbloqueio &amp; Suporte</span>
+    </div>
+    <nav class="nav" id="nav">
+      <a class="active" data-tab="geral"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Visão Geral</span></a>
+      <a data-tab="clientes"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><circle cx="18" cy="9" r="2.3"/></svg><span>Clientes</span></a>
+      <a data-tab="licencas"><svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0110 0v3"/><rect x="5" y="11" width="14" height="9" rx="2"/></svg><span>Licenças &amp; Código</span></a>
+      <a data-tab="licencas"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.4 12h10l2-8H6"/></svg><span>Vendas</span></a>
+      <a data-tab="geral"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Relatórios</span></a>
+      <a data-tab="geral"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 00-.2-1.6l2-1.5-2-3.4-2.3 1a7 7 0 00-2.8-1.6L13.4 2h-2.8l-.5 2.3a7 7 0 00-2.8 1.6l-2.3-1-2 3.4 2 1.5A7 7 0 005 12a7 7 0 00.2 1.6l-2 1.5 2 3.4 2.3-1a7 7 0 002.8 1.6l.5 2.3h2.8l.5-2.3a7 7 0 002.8-1.6l2.3 1 2-3.4-2-1.5A7 7 0 0019 12z"/></svg><span>Configurações</span></a>
+      <a data-tab="geral"><svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0116 0"/><rect x="3" y="13" width="4" height="6" rx="2"/><rect x="17" y="13" width="4" height="6" rx="2"/></svg><span>Suporte</span></a>
+      <a id="navSair"><svg viewBox="0 0 24 24"><path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4"/><path d="M6 12h10"/></svg><span>Sair</span></a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="seccard">
+      <div class="shield"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#51e39a" stroke-width="2"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <b>Segurança em primeiro lugar!</b>
+      <span class="muted">Seus dados protegidos sempre.</span>
+    </div>
+    <div class="ver"><span class="dot"></span> TecUnlock v2.0</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar" id="topo">
+      <div class="bar"></div>
+      <h1>TecUnlock — Painel de Licenças</h1>
+      <div class="sp"></div>
+      <div class="pillbadge"><span class="dot"></span> Sistema Online</div>
+      <div class="userchip"><span class="av"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#cfe0ff" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></span><span id="admNome">Olá, Admin</span></div>
+    </div>
+
+    <div class="content">
+     <!-- ===================== ABA: VISÃO GERAL ===================== -->
+     <section class="tab" data-tab="geral">
+      <!-- KPIs -->
+      <div class="stats" id="resumo">
+        <div class="stat b"><div class="top"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><circle cx="18" cy="9" r="2.3"/></svg></div><div><div class="n" id="stTotal">—</div><div class="l">Total de Clientes</div></div></div><div class="foot"><i></i></div></div>
+        <div class="stat g"><div class="top"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg></div><div><div class="n" id="stAtivos">—</div><div class="l">Licenças Ativas</div></div></div><div class="foot"><i></i></div></div>
+        <div class="stat a"><div class="top"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><div class="n" id="stVencendo">—</div><div class="l">Vencendo (até 2 dias)</div></div></div><div class="foot"><i></i></div></div>
+        <div class="stat p"><div class="top"><div class="ic"><svg viewBox="0 0 24 24"><path d="M2 8.5a16 16 0 0120 0"/><path d="M5 12a11 11 0 0114 0"/><path d="M8.5 15.5a6 6 0 017 0"/><circle cx="12" cy="19" r="1"/></svg></div><div><div class="n" id="stOnline">—</div><div class="l">Online Agora</div></div></div><div class="foot"><i></i></div></div>
+      </div>
+
+      <!-- CONFIG: suporte + versão -->
+      <div class="grid2" id="config">
+        <div class="card" id="suporte">
+          <h3><span class="ic" style="background:rgba(47,210,122,.16)"><svg viewBox="0 0 24 24" style="stroke:#51e39a"><path d="M8 11l3 3 5-6"/><path d="M4 7l6-4 10 6-6 4z"/></svg></span>Contato de Suporte / Vendas</h3>
+          <p class="muted" style="margin:0">Link aberto pelo botão verde <b>"Adquirir Licença / Suporte"</b> na tela de login do app. Troque quando mudar de chip: vale na hora, sem recompilar.</p>
+          <label style="margin-top:12px">WhatsApp (só números com DDI+DDD) ou link completo</label>
+          <div class="suprow">
+            <input id="cfgSuporte" placeholder="5511999998888  ou  https://wa.me/55...?text=Quero%20uma%20licença">
+            <button id="btnSalvarSuporte" class="btn-green btn-sm">💾 Salvar</button>
+            <button id="btnCopiarSuporte" class="btn-ghost btn-sm">📋 Copiar</button>
+            <button id="btnTestarSuporte" class="btn-green btn-sm">🟢 Testar WhatsApp</button>
+          </div>
+          <div id="msgSuporte" class="msg"></div>
+        </div>
+
+        <div class="card" id="versao">
+          <h3><span class="ic" style="background:rgba(59,130,246,.16)"><svg viewBox="0 0 24 24" style="stroke:#6ea8ff"><path d="M12 3v10"/><path d="M8 11l4 4 4-4"/><path d="M5 19h14"/></svg></span>Versão e Download do App</h3>
+          <p class="muted" style="margin:0">A <b>versão atual</b> é comparada com a do app: se for maior, o cliente vê o aviso de atualização no login. O <b>link</b> é usado no botão "Baixar atualização" e na mensagem de Copiar Acesso.</p>
+          <div class="row" style="align-items:flex-end;margin-top:8px">
+            <div style="flex:0;min-width:110px"><label>Versão atual</label><input id="cfgVersao" placeholder="2.2"></div>
+            <div style="flex:3"><label>Link de download do .exe</label><input id="cfgDownload" placeholder="https://github.com/você/tecunlock/releases/latest"></div>
+          </div>
+          <div class="suprow">
+            <button id="btnSalvarVersao" class="btn-green btn-sm">💾 Salvar</button>
+            <button id="btnBaixarAgora" class="btn-blue btn-sm">⬇ Baixar Agora</button>
+          </div>
+          <div id="msgVersao" class="msg"></div>
+        </div>
+      </div>
+
+      <!-- ÚLTIMOS ACESSOS -->
+      <div class="card">
+        <h3><span class="ic" style="background:rgba(155,107,255,.16)"><svg viewBox="0 0 24 24" style="stroke:#c3a6ff"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Últimos acessos</h3>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Cliente</th><th>Sessão</th><th>Último acesso</th><th>Vencimento</th></tr></thead>
+          <tbody id="ultimosAcessos"></tbody>
+        </table></div>
+        <div id="vazioAcessos" class="muted" style="padding:14px;display:none">Nenhum acesso registrado ainda.</div>
+      </div>
+     </section>
+
+     <!-- ===================== ABA: CLIENTES ===================== -->
+     <section class="tab" data-tab="clientes" style="display:none">
+      <div class="grid2">
+        <div class="card">
+          <h3><span class="ic" style="background:rgba(59,130,246,.16)"><svg viewBox="0 0 24 24" style="stroke:#6ea8ff"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></span>Buscar Cliente</h3>
+          <p class="muted" style="margin:0 0 10px">Digite o nome, e-mail ou número do cliente para filtrar.</p>
+          <input id="busca" placeholder="Digite para pesquisar…">
+        </div>
+        <div class="card vcard">
+          <h3><span class="ic"><svg viewBox="0 0 24 24" style="stroke:#ffd23b"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg></span>Novo Cliente</h3>
+          <p class="muted" style="margin:0 0 12px">Cadastre um novo cliente de forma rápida e segura.</p>
+          <button id="btnNovo" class="btn-accent" style="width:100%;padding:12px">＋ Novo Cliente</button>
+        </div>
+      </div>
+
+      <div class="card" id="tabela">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+          <h3 style="margin:0"><span class="ic" style="background:rgba(59,130,246,.16)"><svg viewBox="0 0 24 24" style="stroke:#6ea8ff"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><circle cx="18" cy="9" r="2.3"/></svg></span>Clientes</h3>
+          <div style="flex:1"></div>
+          <div class="chips">
+            <div class="chip active" data-filtro="todos">Todos</div>
+            <div class="chip" data-filtro="ativos">Ativos</div>
+            <div class="chip" data-filtro="vencidos">Vencidos</div>
+            <div class="chip" data-filtro="online">Online</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Cliente</th><th>Plano</th><th>Vencimento</th><th>Status</th><th>Sessão</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="corpo"></tbody>
+        </table></div>
+        <div id="vazio" class="muted" style="padding:16px;display:none">Nenhum cliente encontrado.</div>
+      </div>
+     </section>
+
+     <!-- ===================== ABA: LICENÇAS & CÓDIGO RÁPIDO ===================== -->
+     <section class="tab" data-tab="licencas" style="display:none">
+      <div class="card vcard">
+        <h3><span class="ic"><svg viewBox="0 0 24 24" style="stroke:#ffd23b"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg></span>Gerar Código Rápido (Sem Login)</h3>
+        <p class="muted" style="margin:0 0 10px">Cria um código curto (ex.: <b>TEC-8492</b>) que o cliente usa para entrar no app <b>sem e-mail/senha</b>. Ele vence sozinho no prazo escolhido.</p>
+        <div class="suprow">
+          <select id="prazoCodigo" style="max-width:150px">
+            <option value="1">24 horas</option>
+            <option value="7">7 dias</option>
+            <option value="30" selected>30 dias</option>
+          </select>
+          <input id="nomeCodigo" placeholder="Nome / identificação (opcional)">
+          <button id="btnGerarCodigo" class="btn-accent btn-sm">⚡ Gerar Código Rápido</button>
+        </div>
+        <div id="resultadoCodigo" class="msg"></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+          <h3 style="margin:0"><span class="ic" style="background:rgba(245,196,0,.16)"><svg viewBox="0 0 24 24" style="stroke:#ffd23b"><path d="M7 11V8a5 5 0 0110 0v3"/><rect x="5" y="11" width="14" height="9" rx="2"/></svg></span>Controle de Vencimentos</h3>
+          <div style="flex:1"></div>
+          <div class="chips">
+            <div class="chip active" data-filtro="todos">Todos</div>
+            <div class="chip" data-filtro="ativos">Ativos</div>
+            <div class="chip" data-filtro="vencidos">Vencidos</div>
+            <div class="chip" data-filtro="online">Online</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Cliente / Código</th><th>Vencimento</th><th>Sessão</th><th style="text-align:right">Controle da licença</th></tr></thead>
+          <tbody id="corpoLic"></tbody>
+        </table></div>
+        <div id="vazioLic" class="muted" style="padding:16px;display:none">Nenhum cliente encontrado.</div>
+      </div>
+     </section>
+    </div>
+
+    <div class="foot">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6ea8ff" stroke-width="2"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg>
+      <b>TecUnlock</b> — Atendimento Transparente e Seguro
+      <div class="sp"></div>
+      <span>🕒 Última atualização: <span id="ultAtualiza">—</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL cliente -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitulo" style="margin:0 0 8px">Novo cliente</h3>
+    <input type="hidden" id="cId">
+    <label>Celular / WhatsApp * (só números, com DDD)</label><input id="cCelular" placeholder="5511999998888">
+    <label>Nome (opcional)</label><input id="cNome">
+    <label>E-mail (opcional)</label><input id="cEmail" type="email">
+    <div class="row">
+      <div><label>Senha <span class="muted" id="senhaHint"></span></label><input id="cSenha" placeholder="definir / alterar"></div>
+      <div><label>Plano</label><select id="cPlano"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="custom">Personalizado…</option></select></div>
+      <div id="wrapDias" style="flex:0;min-width:110px;display:none"><label>Dias</label><input id="cDias" type="number" min="1" max="3650" placeholder="90"></div>
+    </div>
+    <label>Logo do cliente (opcional)</label>
+    <input type="hidden" id="cLogo">
+    <div class="logo-box">
+      <img id="logoPrev" alt="" style="display:none">
+      <div style="flex:1;min-width:0">
+        <label for="cLogoArq" class="btn-blue btn-sm logo-btn">📷 Enviar imagem</label>
+        <input type="file" id="cLogoArq" accept="image/*" style="display:none">
+        <button type="button" id="btnTirarLogo" class="btn-ghost btn-sm" style="display:none">Remover</button>
+        <div id="logoStatus" class="muted" style="margin-top:6px">Nenhuma logo: o app usa a logo padrão.</div>
+      </div>
+    </div>
+    <div id="msgModal" class="msg"></div>
+    <div class="row" style="margin-top:14px">
+      <button id="btnSalvar" class="btn-accent" style="flex:1;padding:11px">Salvar</button>
+      <button id="btnCancelar" class="btn-ghost" style="flex:0;min-width:110px">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* ===========================================================================
+   >>> CONFIGURE AQUI <<<  (os mesmos dados do app C#)
+   Supabase → Project Settings → API
+=========================================================================== */
+const SUPABASE_URL = "https://nmxugiqglkhbxuoquldu.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_dPoHPtvTLIu2L7Pd1CdE7Q_nx-MOxIs";
+/* =========================================================================== */
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+let cache = [];
+let filtroAtual = "todos";
+const senhaCache = {};   // senhas digitadas nesta sessão (para "Copiar Acesso"); não são lidas do banco (ficam cifradas)
+
+function msg(el, texto, tipo){ el.className = "msg " + (tipo||""); el.textContent = texto || ""; }
+
+/* ---- sessão admin ---- */
+async function checarSessao(){
+  const { data } = await sb.auth.getSession();
+  if (data.session){ $("admNome").textContent = "Olá, " + (data.session.user.email||"Admin").split("@")[0]; mostrarPainel(); }
+  else mostrarLogin();
+}
+function mostrarLogin(){ $("telaLogin").style.display="flex"; $("telaPainel").style.display="none"; }
+async function mostrarPainel(){ $("telaLogin").style.display="none"; $("telaPainel").style.display="flex"; carregarSuporte(); carregarVersao(); await carregar(); }
+
+/* ---- navegação lateral: abas reais (alterna as seções) ---- */
+function mostrarAba(nome){
+  document.querySelectorAll(".tab").forEach(s => s.style.display = s.dataset.tab===nome ? "block" : "none");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+document.querySelectorAll("#nav a[data-tab]").forEach(a => a.onclick = () => {
+  document.querySelectorAll("#nav a").forEach(x=>x.classList.remove("active")); a.classList.add("active");
+  mostrarAba(a.dataset.tab);
+});
+$("navSair").onclick = async () => { await sb.auth.signOut(); mostrarLogin(); };
+
+/* ---- contato de suporte (tabela config, chave suporte_url) ---- */
+function linkSuporte(v){
+  v = (v||"").trim(); if (!v) return "";
+  const dig = v.replace(/\D/g,"");
+  if (!v.includes("://") && /^[\d\s()+-]+$/.test(v) && dig.length >= 10) return "https://wa.me/" + dig;
+  return v.includes("://") ? v : "https://" + v;
+}
+async function carregarSuporte(){
+  const { data, error } = await sb.from("config").select("valor").eq("chave","suporte_url").maybeSingle();
+  if (error) return msg($("msgSuporte"), "Erro ao ler o contato: " + error.message + " (rodou o SQL da tabela config?)", "err");
+  $("cfgSuporte").value = data?.valor || "";
+}
+$("btnSalvarSuporte").onclick = async () => {
+  const v = $("cfgSuporte").value.trim();
+  const link = linkSuporte(v);
+  if (v && !/^https?:\/\//i.test(link)) return msg($("msgSuporte"), "Use só números (ex.: 5511999998888) ou um link http(s).", "err");
+  const { error } = await sb.from("config").upsert({ chave:"suporte_url", valor:v, atualizado_em:new Date().toISOString() });
+  if (error) return msg($("msgSuporte"), "Erro ao salvar: " + error.message, "err");
+  msg($("msgSuporte"), v ? "Salvo! O app vai abrir: " + link : "Contato removido (o botão do app vai avisar que não está configurado).", "ok");
+};
+$("btnCopiarSuporte").onclick = async () => {
+  const link = linkSuporte($("cfgSuporte").value);
+  if (!link) return msg($("msgSuporte"), "Digite um número ou link primeiro.", "err");
+  try { await navigator.clipboard.writeText(link); msg($("msgSuporte"), "Link copiado: " + link, "ok"); }
+  catch(e){ prompt("Copie o link:", link); }
+};
+$("btnTestarSuporte").onclick = () => {
+  const link = linkSuporte($("cfgSuporte").value);
+  if (!link) return msg($("msgSuporte"), "Digite um número ou link primeiro.", "err");
+  window.open(link, "_blank");
+};
+
+/* ---- versão / download do app (config) ---- */
+async function carregarVersao(){
+  const { data, error } = await sb.from("config").select("chave,valor").in("chave",["versao_atual","download_url"]);
+  if (error) return msg($("msgVersao"), "Erro ao ler versão: " + error.message + " (rodou o SQL de atualização?)", "err");
+  const m = Object.fromEntries((data||[]).map(r=>[r.chave,r.valor]));
+  $("cfgVersao").value = m.versao_atual || ""; $("cfgDownload").value = m.download_url || "";
+}
+function downloadUrl(){
+  let v = ($("cfgDownload").value||"").trim();
+  if (v && !/:\/\//.test(v)) v = "https://" + v;
+  return v;
+}
+$("btnSalvarVersao").onclick = async () => {
+  const versao = $("cfgVersao").value.trim(), dl = downloadUrl();
+  if (dl && !/^https?:\/\//i.test(dl)) return msg($("msgVersao"), "O link de download deve ser um endereço http(s).", "err");
+  const { error } = await sb.from("config").upsert([
+    { chave:"versao_atual", valor:versao, atualizado_em:new Date().toISOString() },
+    { chave:"download_url", valor:dl,     atualizado_em:new Date().toISOString() }
+  ]);
+  if (error) return msg($("msgVersao"), "Erro ao salvar: " + error.message, "err");
+  msg($("msgVersao"), "Salvo! Clientes com versão menor que " + (versao||"—") + " verão o aviso de atualização.", "ok");
+};
+$("btnBaixarAgora").onclick = () => {
+  const dl = downloadUrl();
+  if (!dl) return msg($("msgVersao"), "Defina o link de download primeiro.", "err");
+  window.open(dl, "_blank");
+};
+
+/* ---- filtros rápidos (sincronizados entre as duas tabelas) ---- */
+document.querySelectorAll(".chip").forEach(ch => ch.onclick = () => {
+  filtroAtual = ch.dataset.filtro;
+  document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.filtro===filtroAtual));
+  render();
+});
+
+/* ---- Gerar Código Rápido (acesso sem login) ---- */
+$("btnGerarCodigo").onclick = async () => {
+  const dias = parseInt($("prazoCodigo").value);
+  const code = "TEC-" + Math.floor(1000 + Math.random()*9000);
+  const venc = new Date(Date.now() + dias*86400000).toISOString();
+  const row = { celular: code, codigo_rapido: code, nome: ($("nomeCodigo").value.trim() || "Acesso rápido"),
+                senha: Math.random().toString(36).slice(2,10), senha_visivel: null, plano: dias, vencimento: venc };
+  const { error } = await sb.from("clientes").insert(row);
+  if (error) return msg($("resultadoCodigo"), "Erro ao gerar: " + error.message + " (rodou o SQL que cria a coluna codigo_rapido?)", "err");
+  try { await navigator.clipboard.writeText(code); } catch(e){}
+  const prazoTxt = dias===1 ? "24 horas" : dias + " dias";
+  msg($("resultadoCodigo"), "✓ Código gerado e copiado: " + code + "  —  válido por " + prazoTxt + " (até " + new Date(venc).toLocaleDateString("pt-BR") + "). O cliente entra no app digitando só esse código.", "ok");
+  $("nomeCodigo").value = "";
+  await carregar();
+};
+
+$("btnEntrar").onclick = async () => {
+  msg($("msgLogin"),"Entrando…","");
+  const { error } = await sb.auth.signInWithPassword({ email:$("admEmail").value.trim(), password:$("admSenha").value });
+  if (error) return msg($("msgLogin"), "Login inválido. Confira e-mail/senha e se o e-mail está na tabela admins.", "err");
+  $("admNome").textContent = "Olá, " + ($("admEmail").value.trim().split("@")[0] || "Admin");
+  await mostrarPainel();
+};
+
+/* ---- carregar clientes ---- */
+async function carregar(){
+  const { data, error } = await sb.from("clientes").select("*").order("criado_em",{ascending:false});
+  if (error){ alert("Erro ao ler clientes: " + error.message + "\n(Confira as regras RLS / tabela admins.)"); return; }
+  cache = data || [];
+  $("ultAtualiza").textContent = new Date().toLocaleString("pt-BR");
+  render();
+}
+$("busca").oninput = render;
+
+function online(c){ return c.token_sessao && c.ultimo_ping && (Date.now()-new Date(c.ultimo_ping).getTime())/60000 <= 5; }
+function vigente(c){ return c.ativo && new Date(c.vencimento) >= new Date(); }
+function diasAte(c){ return Math.ceil((new Date(c.vencimento) - new Date())/86400000); }
+function statusSessao(c){
+  if (!c.token_sessao || !c.ultimo_ping) return '<span class="pill no">livre</span>';
+  return online(c) ? '<span class="pill on">ativa agora</span>' : '<span class="pill no">caiu</span>';
+}
+function venc(c){
+  const d = new Date(c.vencimento), hoje = new Date();
+  const dias = Math.ceil((d - hoje)/86400000);
+  const txt = d.toLocaleDateString("pt-BR");
+  if (d < hoje) return `<span class="pill no">vencido</span> <span class="muted">${txt}</span>`;
+  return `<span class="pill ok">${dias} dia(s)</span> <span class="muted">${txt}</span>`;
+}
+function esc(s){ return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function thumb(c){
+  const nome = esc(c.nome || c.celular || "?");
+  return c.logo_url
+    ? `<img class="thumb" src="${esc(c.logo_url)}" alt="" onerror="this.style.display='none'">`
+    : `<div class="thumb ph">${(nome.trim()[0]||"?").toUpperCase()}</div>`;
+}
+function atualizarStats(){
+  $("stTotal").textContent   = cache.length;
+  $("stAtivos").textContent  = cache.filter(vigente).length;
+  $("stVencendo").textContent= cache.filter(c => vigente(c) && diasAte(c) <= 2).length;
+  $("stOnline").textContent  = cache.filter(online).length;
+}
+function codBadge(c){ return c.codigo_rapido ? ` <span class="pill warn">⚡ ${esc(c.codigo_rapido)}</span>` : ""; }
+function filtrar(){
+  const q = $("busca") ? $("busca").value.toLowerCase().trim() : "";
+  return cache.filter(c => {
+    if (q && ![c.celular,c.email,c.nome,c.codigo_rapido].join(" ").toLowerCase().includes(q)) return false;
+    if (filtroAtual==="ativos")   return vigente(c);
+    if (filtroAtual==="vencidos") return !vigente(c);
+    if (filtroAtual==="online")   return online(c);
+    return true;
+  });
+}
+function render(){
+  atualizarStats();
+  const lista = filtrar();
+
+  // ── tabela de CLIENTES (dados cadastrais) ──
+  $("vazio").style.display = lista.length ? "none" : "block";
+  $("corpo").innerHTML = lista.map(c => `
+    <tr>
+      <td><div class="cli">${thumb(c)}<div><b>${esc(c.nome || c.celular)}</b>${codBadge(c)}<div class="sub"><span>📱 ${esc(c.celular)}</span>${c.email?`<span>✉ ${esc(c.email)}</span>`:""}</div></div></div></td>
+      <td>${c.plano} dias</td>
+      <td>${venc(c)}</td>
+      <td>${c.ativo?'<span class="pill ok">ativo</span>':'<span class="pill no">inativo</span>'}</td>
+      <td>${statusSessao(c)}</td>
+      <td><div class="acts">
+        <button class="btn-accent btn-sm" onclick="copiarAcesso('${c.id}')">📋 Copiar Acesso</button>
+        <button class="btn-green btn-sm" onclick="zap('${esc(c.celular)}','${esc((c.nome||'').replace(/'/g,''))}')">WhatsApp</button>
+        <button class="btn-ghost btn-sm" onclick="editar('${c.id}')">✏ Editar</button>
+        <button class="btn-red btn-sm" onclick="deletar('${c.id}')">🗑 Deletar</button>
+      </div></td>
+    </tr>`).join("");
+
+  // ── tabela de LICENÇAS (controle de vencimento) ──
+  $("vazioLic").style.display = lista.length ? "none" : "block";
+  $("corpoLic").innerHTML = lista.map(c => `
+    <tr>
+      <td><div class="cli">${thumb(c)}<div><b>${esc(c.nome || c.celular)}</b>${codBadge(c)}<div class="sub"><span>📱 ${esc(c.celular)}</span></div></div></div></td>
+      <td>${venc(c)}</td>
+      <td>${statusSessao(c)}</td>
+      <td><div class="acts">
+        <button class="btn-green btn-sm" onclick="renovar('${c.id}',7)">+7d</button>
+        <button class="btn-green btn-sm" onclick="renovar('${c.id}',30)">+30d</button>
+        <button class="btn-ghost btn-sm" onclick="renovarCustom('${c.id}')">+ dias…</button>
+        <button class="btn-red btn-sm" onclick="vencer('${c.id}')">Vencer agora</button>
+        <button class="btn-purple btn-sm" onclick="derrubar('${c.id}')">Derrubar</button>
+      </div></td>
+    </tr>`).join("");
+
+  // ── Visão Geral: últimos acessos (sessões mais recentes) ──
+  const rec = cache.filter(c => c.ultimo_ping).sort((a,b)=> new Date(b.ultimo_ping) - new Date(a.ultimo_ping)).slice(0,6);
+  $("vazioAcessos").style.display = rec.length ? "none" : "block";
+  $("ultimosAcessos").innerHTML = rec.map(c => `
+    <tr>
+      <td><div class="cli">${thumb(c)}<div><b>${esc(c.nome || c.celular)}</b>${codBadge(c)}</div></div></td>
+      <td>${statusSessao(c)}</td>
+      <td class="muted">${new Date(c.ultimo_ping).toLocaleString("pt-BR")}</td>
+      <td>${venc(c)}</td>
+    </tr>`).join("");
+}
+async function renovarCustom(id){
+  const n = parseInt(prompt("Adicionar quantos dias à licença?", "15"));
+  if (!n || n < 1 || n > 3650) return;
+  await renovar(id, n);
+}
+
+/* ---- ações ---- */
+async function renovar(id, dias){
+  const c = cache.find(x=>x.id===id); if(!c) return;
+  const base = new Date(c.vencimento) > new Date() ? new Date(c.vencimento) : new Date();
+  base.setDate(base.getDate() + dias);
+  const { error } = await sb.from("clientes").update({ vencimento: base.toISOString(), ativo:true }).eq("id", id);
+  if (error) return alert("Erro: " + error.message);
+  await carregar();
+}
+async function derrubar(id){
+  if (!confirm("Derrubar a sessão ativa deste cliente? Ele poderá entrar de novo.")) return;
+  const { error } = await sb.from("clientes").update({ token_sessao:null, ultimo_ping:null }).eq("id", id);
+  if (error) return alert("Erro: " + error.message);
+  await carregar();
+}
+function zap(celular, nome){
+  const txt = encodeURIComponent(`Olá ${nome||""}! Sua licença do TecUnlock está vencendo. Deseja renovar? 😊`);
+  window.open(`https://wa.me/${celular.replace(/\D/g,"")}?text=${txt}`, "_blank");
+}
+async function vencer(id){
+  const c = cache.find(x=>x.id===id); if(!c) return;
+  if (!confirm("Vencer/bloquear AGORA a licença de " + (c.nome||c.celular) + "?\nA licença vira vencida e a sessão cai na hora (use para suspender ou testar).")) return;
+  const ontem = new Date(Date.now() - 86400000).toISOString();
+  const { error } = await sb.from("clientes").update({ vencimento: ontem, token_sessao:null, ultimo_ping:null }).eq("id", id);
+  if (error) return alert("Erro: " + error.message);
+  await carregar();
+}
+async function deletar(id){
+  const c = cache.find(x=>x.id===id); if(!c) return;
+  if (!confirm("DELETAR definitivamente o cliente " + (c.nome||c.celular) + "?\nEsta ação não pode ser desfeita.")) return;
+  const { error } = await sb.from("clientes").delete().eq("id", id);
+  if (error) return alert("Erro ao deletar: " + error.message);
+  delete senhaCache[id];
+  await carregar();
+}
+async function copiarAcesso(id){
+  const c = cache.find(x=>x.id===id); if(!c) return;
+  const validade = new Date(c.vencimento).toLocaleDateString("pt-BR");
+  const dl = ($("cfgDownload").value||"").trim();
+  const senha = c.senha_visivel || senhaCache[id] || "(a senha definida no cadastro)";
+  const temSenha = !!(c.senha_visivel || senhaCache[id]);
+  const acesso = c.codigo_rapido
+    ? `⚡ Código de acesso: ${c.codigo_rapido}\n   (entre no app digitando só este código, sem senha)`
+    : `👤 Login: ${c.email || c.celular}\n🔑 Senha: ${senha}`;
+  const msgTxt =
+`✅ *Acesso TecUnlock Server*
+
+${acesso}
+📅 Válido até: ${validade}
+${dl ? "⬇️ Baixar o programa: " + dl + "\n" : ""}
+Como usar:
+1) Baixe e abra o programa (não precisa instalar nada).
+2) Faça login com os dados acima.
+3) Qualquer dúvida, é só chamar aqui. 😊`;
+  try{
+    await navigator.clipboard.writeText(msgTxt);
+    alert("Mensagem de acesso copiada!" + (temSenha || c.codigo_rapido ? "" : "\n\nObs.: a senha não aparece para clientes antigos sem senha_visivel. Edite o cliente, defina a senha e copie em seguida."));
+  }catch(e){
+    prompt("Copie a mensagem de acesso:", msgTxt);
+  }
+}
+
+/* ---- modal novo/editar ---- */
+function abrirModal(){ $("modalBg").classList.add("open"); msg($("msgModal"),"",""); }
+$("btnCancelar").onclick = () => $("modalBg").classList.remove("open");
+$("btnNovo").onclick = () => {
+  $("modalTitulo").textContent="Novo cliente"; $("cId").value="";
+  ["cCelular","cNome","cEmail","cSenha"].forEach(i=>$(i).value="");
+  $("cPlano").value="30"; $("cDias").value=""; $("senhaHint").textContent="(obrigatória)";
+  sincDias();
+  mostrarLogo("");
+  abrirModal();
+};
+/* plano personalizado: mostra o campo de dias quando escolher "Personalizado" */
+function sincDias(){ $("wrapDias").style.display = $("cPlano").value==="custom" ? "block" : "none"; }
+$("cPlano").onchange = sincDias;
+function editar(id){
+  const c = cache.find(x=>x.id===id); if(!c) return;
+  $("modalTitulo").textContent="Editar cliente"; $("cId").value=c.id;
+  $("cCelular").value=c.celular; $("cNome").value=c.nome||""; $("cEmail").value=c.email||"";
+  $("cSenha").value = c.senha_visivel || ""; $("cLogo").value=c.logo_url||"";   // senha_visivel aparece ao editar
+  if (c.plano==7 || c.plano==30) { $("cPlano").value=String(c.plano); $("cDias").value=""; }
+  else { $("cPlano").value="custom"; $("cDias").value=c.plano; }
+  sincDias();
+  $("senhaHint").textContent = c.senha_visivel ? "(senha atual visível — edite se quiser)" : "(deixe em branco para manter)";
+  mostrarLogo(c.logo_url||"");
+  abrirModal();
+}
+/* ---- logo: upload direto para o bucket público "logos" ---- */
+function mostrarLogo(url, status){
+  $("cLogo").value = url || "";
+  $("logoPrev").style.display = url ? "block" : "none";
+  if (url) $("logoPrev").src = url;
+  $("btnTirarLogo").style.display = url ? "inline-block" : "none";
+  $("logoStatus").textContent = status || (url ? "Logo definida." : "Nenhuma logo: o app usa a logo padrão.");
+}
+// Envia o ARQUIVO ORIGINAL (sem comprimir nem reduzir resolução) → logo em alta qualidade, nítida no app em Full HD/4K.
+$("cLogoArq").onchange = async (ev) => {
+  const arq = ev.target.files[0]; ev.target.value = "";
+  if (!arq) return;
+  if (!arq.type.startsWith("image/")) return mostrarLogo($("cLogo").value, "⚠ Escolha um arquivo de imagem.");
+  const anterior = $("cLogo").value;
+  $("logoStatus").textContent = "Enviando imagem em alta qualidade…"; $("btnSalvar").disabled = true;
+  try{
+    const ext = ((arq.name.split(".").pop()||"png").toLowerCase().replace(/[^a-z0-9]/g,"")) || "png";
+    const nome = `logo_${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const { error } = await sb.storage.from("logos").upload(nome, arq, { contentType: arq.type||"image/png", cacheControl:"3600", upsert:false });
+    if (error) throw error;
+    const url = sb.storage.from("logos").getPublicUrl(nome).data.publicUrl;
+    const id = $("cId").value;
+    if (id){   // cliente já existe: grava na hora
+      const { error:e2 } = await sb.from("clientes").update({ logo_url:url }).eq("id", id);
+      if (e2) throw e2;
+      const c = cache.find(x=>x.id===id); if (c) c.logo_url = url;
+      mostrarLogo(url, "✓ Logo original enviada e salva no cliente.");
+    } else {
+      mostrarLogo(url, "✓ Logo original enviada. Será salva ao clicar em Salvar.");
+    }
+  }catch(e){
+    mostrarLogo(anterior, "⚠ Erro no envio: " + (e.message||e) + " (imagem muito grande? aumente o limite do bucket logos no SQL)");
+  }finally{ $("btnSalvar").disabled = false; }
+};
+$("btnTirarLogo").onclick = async () => {
+  const id = $("cId").value;
+  if (id){
+    const { error } = await sb.from("clientes").update({ logo_url:null }).eq("id", id);
+    if (error) return mostrarLogo($("cLogo").value, "⚠ Erro: " + error.message);
+    const c = cache.find(x=>x.id===id); if (c) c.logo_url = null;
+  }
+  mostrarLogo("", "Logo removida: o app volta a usar a logo padrão.");
+};
+
+$("btnSalvar").onclick = async () => {
+  const id = $("cId").value;
+  const celular = $("cCelular").value.replace(/\D/g,"");
+  if (celular.length < 10) return msg($("msgModal"),"Informe um celular/WhatsApp válido com DDD.","err");
+  const dias = $("cPlano").value==="custom" ? parseInt($("cDias").value) : parseInt($("cPlano").value);
+  if (!dias || dias < 1 || dias > 3650) return msg($("msgModal"),"Informe a quantidade de dias (1 a 3650).","err");
+  const dados = { celular, nome:$("cNome").value.trim()||null, email:$("cEmail").value.trim()||null,
+                  plano:dias, logo_url:$("cLogo").value.trim()||null };
+  const senha = $("cSenha").value;
+  try{
+    if (!id){
+      if (!senha) return msg($("msgModal"),"Defina uma senha para o novo cliente.","err");
+      dados.senha = senha; dados.senha_visivel = senha;   // guarda a senha em texto p/ exibir e Copiar Acesso
+      dados.vencimento = new Date(Date.now() + dias*86400000).toISOString();
+      const { data, error } = await sb.from("clientes").insert(dados).select("id").single();
+      if (error) throw error;
+      if (data) senhaCache[data.id] = senha;
+    } else {
+      if (senha) { dados.senha = senha; dados.senha_visivel = senha; senhaCache[id] = senha; }
+      const { error } = await sb.from("clientes").update(dados).eq("id", id);
+      if (error) throw error;
+    }
+    $("modalBg").classList.remove("open");
+    await carregar();
+  }catch(e){ msg($("msgModal"), "Erro: " + (e.message||e), "err"); }
+};
+
+checarSessao();
+</script>
+</body>
+</html>
